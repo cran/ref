@@ -1,11 +1,11 @@
-as.ref                  coercing to reference
-deref                   dereferencing references
-HanoiTower              application example for references
-is.ref                  checking (for) references
+HanoiTower              application example for references 
+as.ref                  coercing to reference 
+deref                   dereferencing references 
+is.ref                  checking (for) references 
 optimal.index           creating standardized, memory optimized index
-                        for subsetting
-ref                     creating references
-refdata                 subsettable reference to matrix or data.frame
+                        for subsetting 
+ref                     creating references 
+refdata                 subsettable reference to matrix or data.frame 
 regression.test.refdata
-                        regression test for refdata
-sleep.wrapper           wrapper to get some measures for all platforms
+                        regression test for refdata 
+sleep.wrapper           wrapper to get some measures for all platforms 

@@ -30,13 +30,13 @@ refdata(x)
 # rd[]                               # get all data
 # rd[i, j]                           # get part of data
 # rd[i, j, ref=TRUE]                 # get new reference on part of data
-# rd[i, j] <- value                  # modify part of data (now rd is reference on local copy of the data)
+# rd[i, j]           <- value        # modify part of data (now rd is reference on local copy of the data)
 # rd[i, j, ref=TRUE] <- value        # modify part of original data (respecting subsetting history)
 # dim(rd)                            # dim of (subsetted) data
 # dim(rd, ref=TRUE)                  # dim of original data
 # dimnames(rd)                       # dimnames of (subsetted) data
 # dimnames(rd, ref=TRUE)             # dimnames of original data
-# dimnames(rd) <- value              # modify dimnames (now rd is reference on local copy of the data)
+# dimnames(rd)           <- value    # modify dimnames (now rd is reference on local copy of the data)
 # dimnames(rd, ref=TRUE) <- value    # modify complete dimnames of original object (NOT respecting subsetting history)
 }
 \arguments{

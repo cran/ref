@@ -54,7 +54,8 @@ if (!exists("is.R")){
 #!  You are using it at your own risk.
 #! }
 #! \section{R 1.8 WARNING}{
-#!  Changing parts of referenced objects has been slowed down by order of magnitudes since R version 1.8 (see performance test examples on the help page for \{code\link{deref}}). Hopefully the old performance can be restored in future versions.
+#!  Changing parts of referenced objects has been slowed down by order of magnitudes since R version 1.8, see performance test examples on the help page for \code{\link{deref}}.
+#!  Hopefully the old performance can be restored in future versions.
 #! }
 #! \section{S+ WARNING}{
 #!  Package ref should generally work under R and S+. However, when changing very small parts of referenced objects, using references under S+ might be inefficient (very slow with high temporary memory requirements).
