@@ -220,13 +220,14 @@ if(is.R()){
 #! }
 #! \usage{
 #! deref(ref)
-#! deref<-(ref, value)
+#! deref(ref) <- value
 #! #the following does not pass R CMD CHECK
-#! #deref(ref) <- value
+#! #deref<-(ref, value)
 #! #deref(ref)[1] <- value  # subsetted assignment appears to be inefficent in S+.
 #! }
 #! \arguments{
 #!   \item{ref}{ a reference as returned by \code{\link{ref}} or \code{\link{as.ref}} }
+#!   \item{value}{ a value to be assigned to the reference }
 #! }
 #! \details{
 #!   \code{deref} and \code{deref<-} provide convenient access to objects in other environments/frames.

@@ -141,8 +141,10 @@ need.index <- function(oi)
 #! \usage{
 #! # -- usage for R CMD CHECK, see below for human readable version -----------
 #! refdata(x)
-#! [.refdata(x, i = NULL, j = NULL, drop = FALSE, ref = FALSE)
-#! [<-.refdata(x, i = NULL, j = NULL, ref = FALSE, value)
+#! #[.refdata(x, i = NULL, j = NULL, drop = FALSE, ref = FALSE)
+#! #[<-.refdata(x, i = NULL, j = NULL, ref = FALSE, value)
+#!  \method{[}{refdata}(x, i = NULL, j = NULL, drop = FALSE, ref = FALSE)
+#!  \method{[}{refdata}(x, i = NULL, j = NULL, ref = FALSE) <- value
 #!  \method{dim}{refdata}(x, ref = FALSE)
 #!  \method{dim}{refdata}(x) <- value
 #!  \method{dimnames}{refdata}(x, ref = FALSE)
