@@ -8,6 +8,7 @@ This code is offered "as is" under the GPL, usage is completely at your own risk
 (Some efforts has been put in the included regression tests to make shure the code does what it is intended to do).
 
 Feedback about problems or successful example uses is welcome.
+Please use the email address given in the package DESCRIPTION and please don't cc to lists for spam prevention.
 
 Best regards
 
@@ -16,4 +17,3 @@ Jens Oehlschlägel
 
 
 
-P.S. please use the email address given in the package DESCRIPTION and please don't cc to lists for spam prevention
