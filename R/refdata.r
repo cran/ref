@@ -261,8 +261,8 @@ need.index <- function(oi)
 refdata <- function(x){
   d <- dim(x)
   stopifnot(length(d)==2)
-  dat <- new.env(parent=NULL)
-  ind <- new.env(parent=NULL)
+  dat <- new.env()
+  ind <- new.env()
   assign("x", x, dat)
   assign("dim", d, dat)
   assign("ni", d[1], ind)
@@ -284,7 +284,7 @@ refdata <- function(x){
   xx <- get("x", dat)
   d <- get("dim", dat)
   if (ref){
-    new.ind <- new.env(parent=NULL)
+    new.ind <- new.env()
     ind <- attr(x, "ind")
     if (is.null(i)){
       assign("i", get("i", ind), new.ind)
