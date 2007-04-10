@@ -1,5 +1,7 @@
 \name{refdata}
 \alias{refdata}
+\alias{derefdata}
+\alias{derefdata<-}
 \alias{[.refdata}
 \alias{[<-.refdata}
 \alias{[[.refdata}
@@ -7,9 +9,9 @@
 \alias{$.refdata}
 \alias{$<-.refdata}
 \alias{dim.refdata}
-\alias{dim<-.refdata}
 \alias{dimnames.refdata}
-\alias{dimnames<-.refdata}
+\alias{row.names.refdata}
+\alias{names.refdata}
 \alias{print.refdata}
 \title{ subsettable reference to matrix or data.frame }
 \description{
@@ -18,16 +20,21 @@
 \usage{
 # -- usage for R CMD CHECK, see below for human readable version -----------
 refdata(x)
+derefdata(x)
+derefdata(x) <- value
 #[.refdata(x, i = NULL, j = NULL, drop = FALSE, ref = FALSE)
 #[<-.refdata(x, i = NULL, j = NULL, ref = FALSE, value)
  \method{[}{refdata}(x, i = NULL, j = NULL, drop = FALSE, ref = FALSE)
  \method{[}{refdata}(x, i = NULL, j = NULL, ref = FALSE) <- value
- \method{dim}{refdata}(x, ref = FALSE)
- \method{dim}{refdata}(x) <- value
- \method{dimnames}{refdata}(x, ref = FALSE)
- \method{dimnames}{refdata}(x, ref = FALSE) <- value
+ \method{dim}{refdata}(x)
+ \method{dimnames}{refdata}(x)
+ \method{row.names}{refdata}(x)
+ \method{names}{refdata}(x)
 
 # -- most important usage for human beings (does not pass R CMD CHECK) -----
+# rd <- refdata(x)                   # create reference
+# derefdata(x)                       # retrieve original data
+# derefdata(x) <- value              # modify original data
 # rd <- refdata(x)                   # create reference
 # rd[]                               # get all data
 # rd[i, j]                           # get part of data
@@ -35,11 +42,7 @@ refdata(x)
 # rd[i, j]           <- value        # modify part of data (now rd is reference on local copy of the data)
 # rd[i, j, ref=TRUE] <- value        # modify part of original data (respecting subsetting history)
 # dim(rd)                            # dim of (subsetted) data
-# dim(rd, ref=TRUE)                  # dim of original data
 # dimnames(rd)                       # dimnames of (subsetted) data
-# dimnames(rd, ref=TRUE)             # dimnames of original data
-# dimnames(rd)           <- value    # modify dimnames (now rd is reference on local copy of the data)
-# dimnames(rd, ref=TRUE) <- value    # modify complete dimnames of original object (NOT respecting subsetting history)
 }
 \arguments{
   \item{x}{ a matrix or data.frame or any other 2-dimensional object that has operators "[" and "[<-" defined }
@@ -58,8 +61,8 @@ refdata(x)
   With ref=TRUE indices are always interpreted as row/col indices, i.e. \code{x[i]} and \code{x[cbind(i, j)]} are undefined (and raise stop errors) \cr
   Standard square bracket assignment (\code{rd[i, j] <- value}) creates a reference to a locally modified copy of the (potentially subsetted) data. \cr
   An additional argument (\code{rd[i, j, ref=TRUE] <- value}) allows to modify the original data, properly recognizing the subsetting history. \cr
-  A method \code{\link{dim}(refdata)} returns the dim of the (indexed) data, the dim of the original (non-indexed) data can be accessed using parameter \code{ref=TRUE}. Assignment to dim(refdata)<- is not possible.  but \code{dim(refdata)<-} cannot be assigned. \cr
-  A \code{\link{dimnames}(refdata)} returns the dimnames of the (indexed) data resp. the original data using parameter \code{ref=TRUE}. Assignment is possible but not recommended, parameter \code{ref} decides whether the original data is modified or a copy is created. \cr
+  A method \code{\link{dim}(refdata)} returns the dim of the (indexed) data. \cr
+  A \code{\link{dimnames}(refdata)} returns the dimnames of the (indexed) data. \cr
 }
 \note{
   The refdata code is currently R only (not implemented for S+). \cr

@@ -9,6 +9,7 @@
 # (gpl) 2003
 #---------------------------------------------
 
+#source("d:/MWP/eAnalysis/ref/R/refdata.r")
 
 #! \name{optimal.index}
 #! \alias{optimal.index}
@@ -123,6 +124,8 @@ need.index <- function(oi)
 
 #! \name{refdata}
 #! \alias{refdata}
+#! \alias{derefdata}
+#! \alias{derefdata<-}
 #! \alias{[.refdata}
 #! \alias{[<-.refdata}
 #! \alias{[[.refdata}
@@ -130,9 +133,9 @@ need.index <- function(oi)
 #! \alias{$.refdata}
 #! \alias{$<-.refdata}
 #! \alias{dim.refdata}
-#! \alias{dim<-.refdata}
 #! \alias{dimnames.refdata}
-#! \alias{dimnames<-.refdata}
+#! \alias{row.names.refdata}
+#! \alias{names.refdata}
 #! \alias{print.refdata}
 #! \title{ subsettable reference to matrix or data.frame }
 #! \description{
@@ -141,28 +144,26 @@ need.index <- function(oi)
 #! \usage{
 #! # -- usage for R CMD CHECK, see below for human readable version -----------
 #! refdata(x)
-#! #[.refdata(x, i = NULL, j = NULL, drop = FALSE, ref = FALSE)
-#! #[<-.refdata(x, i = NULL, j = NULL, ref = FALSE, value)
+#! derefdata(x)
+#! derefdata(x) <- value
 #!  \method{[}{refdata}(x, i = NULL, j = NULL, drop = FALSE, ref = FALSE)
 #!  \method{[}{refdata}(x, i = NULL, j = NULL, ref = FALSE) <- value
-#!  \method{dim}{refdata}(x, ref = FALSE)
-#!  \method{dim}{refdata}(x) <- value
-#!  \method{dimnames}{refdata}(x, ref = FALSE)
-#!  \method{dimnames}{refdata}(x, ref = FALSE) <- value
+#!  \method{dim}{refdata}(x)
+#!  \method{dimnames}{refdata}(x)
+#!  \method{row.names}{refdata}(x)
+#!  \method{names}{refdata}(x)
 #!
-#! # -- most important usage for human beings (does not pass R CMD CHECK) -----
+#! # -- most important usage for human beings  --------------------------------
 #! # rd <- refdata(x)                   # create reference
-#! # rd[]                               # get all data
+#! # derefdata(rd)                      # retrieve original data
+#! # derefdata(rd) <- value             # modify original data
+#! # rd[]                               # get all (current) data
 #! # rd[i, j]                           # get part of data
 #! # rd[i, j, ref=TRUE]                 # get new reference on part of data
 #! # rd[i, j]           <- value        # modify part of data (now rd is reference on local copy of the data)
 #! # rd[i, j, ref=TRUE] <- value        # modify part of original data (respecting subsetting history)
 #! # dim(rd)                            # dim of (subsetted) data
-#! # dim(rd, ref=TRUE)                  # dim of original data
 #! # dimnames(rd)                       # dimnames of (subsetted) data
-#! # dimnames(rd, ref=TRUE)             # dimnames of original data
-#! # dimnames(rd)           <- value    # modify dimnames (now rd is reference on local copy of the data)
-#! # dimnames(rd, ref=TRUE) <- value    # modify complete dimnames of original object (NOT respecting subsetting history)
 #! }
 #! \arguments{
 #!   \item{x}{ a matrix or data.frame or any other 2-dimensional object that has operators "[" and "[<-" defined }
@@ -181,14 +182,14 @@ need.index <- function(oi)
 #!   With ref=TRUE indices are always interpreted as row/col indices, i.e. \code{x[i]} and \code{x[cbind(i, j)]} are undefined (and raise stop errors) \cr
 #!   Standard square bracket assignment (\code{rd[i, j] <- value}) creates a reference to a locally modified copy of the (potentially subsetted) data. \cr
 #!   An additional argument (\code{rd[i, j, ref=TRUE] <- value}) allows to modify the original data, properly recognizing the subsetting history. \cr
-#!   A method \code{\link{dim}(refdata)} returns the dim of the (indexed) data, the dim of the original (non-indexed) data can be accessed using parameter \code{ref=TRUE}. Assignment to dim(refdata)<- is not possible.  but \code{dim(refdata)<-} cannot be assigned. \cr
-#!   A \code{\link{dimnames}(refdata)} returns the dimnames of the (indexed) data resp. the original data using parameter \code{ref=TRUE}. Assignment is possible but not recommended, parameter \code{ref} decides whether the original data is modified or a copy is created. \cr
+#!   A method \code{\link{dim}(refdata)} returns the dim of the (indexed) data. \cr
+#!   A \code{\link{dimnames}(refdata)} returns the dimnames of the (indexed) data. \cr
 #! }
 #! \note{
 #!   The refdata code is currently R only (not implemented for S+). \cr
 #!   Please note the following differences to matrices and dataframes: \cr
 #!   \describe{
-#!      \item{\code{x[]}}{you need to write \code{x[]} in order to get the data}
+#!      \item{\code{x[]}}{you need to write \code{x[]} instead of \code{x} in order to get all current data}
 #!      \item{\code{drop=FALSE}}{by default drop=FALSE which gives consistent behaviour for matrices and data.frames. You can use the $- or [[-operator to extract single column vectors which are granted to be of a consistent data type. However, currently $ and [[ are only wrappers to [. They might be performance tuned in later versions.}
 #!      \item{\code{x[i]}}{single index subsetting is not defined, use \code{x[][i]} instead, but beware of differences between matrices and dataframes}
 #!      \item{\code{x[cbind()]}}{matrix index subsetting is not defined, use \code{x[][cbind(i, j)]} instead}
@@ -274,6 +275,19 @@ refdata <- function(x){
   ref
 }
 
+derefdata <- function(x){
+  stopifnot(inherits(x, "refdata"))
+  get("x", envir=attr(x,'dat'))
+}
+
+"derefdata<-" <- function(x, value){
+  stopifnot(inherits(x, "refdata"))
+  dat <- attr(x,'dat')
+  stopifnot(identical(dim(value), dim(get("x", envir=dat))))
+  assign("x", value, envir=dat)
+  x
+}
+
 
 "[.refdata" <- function(x, i=NULL, j=NULL, drop=FALSE, ref=FALSE){
   if (!is.null(dim(i)))
@@ -281,7 +295,7 @@ refdata <- function(x){
   if ( xor(missing(i), missing(j)) && ( nargs() + missing(x) + missing(drop) + missing(ref)) == 4 )
     stop("x[i] single index subsetting undefined for refdata objects, you can use x[][i] instead")
   dat <- attr(x, "dat")
-  xx <- get("x", dat)
+  x2 <- get("x", dat)
   d <- get("dim", dat)
   if (ref){
     new.ind <- new.env()
@@ -290,7 +304,7 @@ refdata <- function(x){
       assign("i", get("i", ind), new.ind)
       assign("ni", get("ni", ind), new.ind)
     }else{
-      i <- optimal.index(i, d[1], rownames(xx), i.previous=get("i", ind))
+      i <- optimal.index(i, d[1], rownames(x2), i.previous=get("i", ind))
       assign("i", i, new.ind)
       assign("ni", attr(i, "ni"), new.ind)
     }
@@ -298,7 +312,7 @@ refdata <- function(x){
       assign("j", get("j", ind), new.ind)
       assign("nj", get("nj", ind), new.ind)
     }else{
-      j <- optimal.index(j, d[2], colnames(xx), i.previous=get("j", ind))
+      j <- optimal.index(j, d[2], colnames(x2), i.previous=get("j", ind))
       assign("j", j, new.ind)
       assign("nj", attr(j, "ni"), new.ind)
     }
@@ -311,7 +325,7 @@ refdata <- function(x){
       if (is.null(i)){
         i <- temp
       }else{
-        i <- optimal.index(i, d[1], rownames(xx), i.previous=temp, strict=FALSE)
+        i <- optimal.index(i, d[1], rownames(x2), i.previous=temp, strict=FALSE)
       }
     }
     temp <- get("j", ind)
@@ -319,20 +333,20 @@ refdata <- function(x){
       if (is.null(j)){
         j <- temp
       }else{
-        j <- optimal.index(j, d[2], colnames(xx), i.previous=temp, strict=FALSE)
+        j <- optimal.index(j, d[2], colnames(x2), i.previous=temp, strict=FALSE)
       }
     }
     if (is.null(i)){
       if (is.null(j)){
-        xx
+        x2
       }else{
-        xx[, j, drop=drop]
+        x2[, j, drop=drop]
       }
     }else{
       if (is.null(j)){
-        xx[i, , drop=drop]
+        x2[i, , drop=drop]
       }else{
-        xx[i, j, drop=drop]
+        x2[i, j, drop=drop]
       }
     }
   }
@@ -348,14 +362,14 @@ refdata <- function(x){
   dat <- attr(x, "dat")
   d <- get("dim", dat)
   if (ref){
-    xx <- get("x", dat)
+    x2 <- get("x", dat)
     if (!is.null(i)){
-      i <- optimal.index(i, d[1], rownames(xx), i.previous=get("i", ind))
+      i <- optimal.index(i, d[1], rownames(x2), i.previous=get("i", ind))
     }else{
       i <- get("i", ind)
     }
     if (!is.null(j)){
-      j <- optimal.index(j, d[2], colnames(xx), i.previous=get("j", ind))
+      j <- optimal.index(j, d[2], colnames(x2), i.previous=get("j", ind))
     }else{
       j <- get("j", ind)
     }
@@ -408,7 +422,7 @@ refdata <- function(x){
 
 
 
-"$.refdata" <- function(x, j, drop=TRUE)
+"$.refdata" <- function(x, j, drop=TRUE, ref=FALSE)
   # xx FIXME TODO lazy implementation as special case of [.refdata, can be performance tuned
 {
   x[, j, drop=drop, ref=ref]
@@ -434,73 +448,27 @@ refdata <- function(x){
 }
 
 
-dim.refdata <- function(x, ref=FALSE){
-  if (ref){
-    get("dim", attr(x, "dat"))
-  }else{
-    ind <- attr(x, "ind")
-    c(get("ni", ind), get("nj", ind))
-  }
+row.names.refdata <- function(x){
+  row.names(x[])
 }
 
-"dim<-.refdata" <- function(x, value)
-  stop("dim assignment of refdata objects not allowed")
-
-dimnames.refdata <- function(x, ref=FALSE){
-  if (ref){
-    dimnames(get("x", attr(x, "dat")))
-  }else{
-    dimnames(x[])
-  }
+names.refdata <- function(x){
+  names(x[])
 }
 
-"dimnames<-.refdata" <- function(x, ref=FALSE, value){
-  dat <- attr(x, "dat")
-  if (ref){
-    #if (is.null(ii)){
-    #  if (is.null(jj)){
-    #    eval(substitute(dimnames(x) <- value, list(value=value)), dat)
-    #  }else{
-    #    eval(substitute(dimnames(x)[[1]] <- value, list(value=value[[1]])), dat)
-    #    eval(substitute(dimnames(x)[[2]][j] <- value, list(j=jj, value=value[[2]])), dat)
-    #  }
-    #}else{
-    #  if (is.null(jj)){
-    #    eval(substitute(dimnames(x)[[1]][i] <- value, list(i=ii, value=value[[1]])), dat)
-    #    eval(substitute(dimnames(x)[[2]] <- value, list(value=value[[2]])), dat)
-    #  }else{
-    #    eval(substitute(dimnames(x)[[1]][i] <- value, list(i=ii, value=value[[1]])), dat)
-    #    eval(substitute(dimnames(x)[[2]][j] <- value, list(j=jj, value=value[[2]])), dat)
-    #  }
-    #}
-    eval(substitute(dimnames(x) <- value, list(value=value)), dat)
-    x
-  }else{
-    ind <- attr(x, "ind")
-    ii <- get("i", ind)
-    jj <- get("j", ind)
-    if (is.null(ii)){
-      if (is.null(jj)){
-        x <- get("x", dat)
-      }else{
-        x <- get("x", dat)[, jj, drop=FALSE]
-      }
-    }else{
-      if (is.null(jj)){
-        x <- get("x", dat)[ii, , drop=FALSE]
-      }else{
-        x <- get("x", dat)[ii, jj, drop=FALSE]
-      }
-    }
-    dimnames(x) <- value
-    refdata(x)
-  }
+dim.refdata <- function(x){
+  ind <- attr(x, "ind")
+  c(get("ni", ind), get("nj", ind))
+}
+
+dimnames.refdata <- function(x){
+  dimnames(x[])
 }
 
 
 print.refdata <- function(x, ...){
-  dim.dat <- dim.refdata(x, ref=TRUE)
-  dim.ind <- dim.refdata(x)
+  dim.dat <- dim(derefdata(x))
+  dim.ind <- dim(x)
   cat("refdata (", if (inherits(x, "data.frame")) "data.frame" else if (is.matrix(x[])) "matrix" else "unknown embedded", ") with [", paste(dim.ind, collapse=",") ,"] of [", paste(dim.dat, collapse=","), "]\n", sep="")
   cat("use  x[]  to get the complete actual subset\n")
   cat("use  x[...]  for standard extraction\n")
@@ -554,21 +522,21 @@ regression.test.refdata <- function(){
     rx3 <- refdata(x)
     stopifnot(identical(rx3[-1, 1:2], x[-1, 1:2]))
     stopifnot(identical(dim(rx3), dim(x)))
-    stopifnot(identical(dim(rx3, ref=TRUE), dim(x)))
+    stopifnot(identical(dim(derefdata(rx3)), dim(x)))
     stopifnot(identical(dimnames(rx3), dimnames(x)))
-    stopifnot(identical(dimnames(rx3, ref=TRUE), dimnames(x)))
+    stopifnot(identical(dimnames(derefdata(rx3)), dimnames(x)))
     rx2 <- rx3[-1, , ref=TRUE]
     stopifnot(identical(rx2[, 1:2], rx3[-1, 1:2]))
     stopifnot(identical(dim(rx2), dim(x[-1, , drop=FALSE])))
-    stopifnot(identical(dim(rx2, ref=TRUE), dim(x)))
+    stopifnot(identical(dim(derefdata(rx2)), dim(x)))
     stopifnot(identical(dimnames(rx2), dimnames(x[-1, , drop=FALSE])))
-    stopifnot(identical(dimnames(rx2, ref=TRUE), dimnames(x)))
+    stopifnot(identical(dimnames(derefdata(rx2)), dimnames(x)))
     rx1 <- rx2[-1, , ref=TRUE]
     stopifnot(identical(rx1[, 1:2], rx2[-1, 1:2]))
     stopifnot(identical(dim(rx1), dim(x[-1, , drop=FALSE][-1, , drop=FALSE])))
-    stopifnot(identical(dim(rx1, ref=TRUE), dim(x)))
+    stopifnot(identical(dim(derefdata(rx1)), dim(x)))
     stopifnot(identical(dimnames(rx1), dimnames(x[-1, , drop=FALSE][-1, , drop=FALSE])))
-    stopifnot(identical(dimnames(rx1, ref=TRUE), dimnames(x)))
+    stopifnot(identical(dimnames(derefdata(rx1)), dimnames(x)))
 
     # check col reduction
     rx3 <- refdata(x)
@@ -576,15 +544,15 @@ regression.test.refdata <- function(){
     rx2 <- rx3[, -1, ref=TRUE]
     stopifnot(identical(rx2[1:2, ], rx3[1:2, -1]))
     stopifnot(identical(dim(rx2), dim(x[, -1, drop=FALSE])))
-    stopifnot(identical(dim(rx2, ref=TRUE), dim(x)))
+    stopifnot(identical(dim(derefdata(rx2)), dim(x)))
     stopifnot(identical(dimnames(rx2), dimnames(x[, -1, drop=FALSE])))
-    stopifnot(identical(dimnames(rx2, ref=TRUE), dimnames(x)))
+    stopifnot(identical(dimnames(derefdata(rx2)), dimnames(x)))
     rx1 <- rx2[, -1, ref=TRUE]
     stopifnot(identical(rx1[1:2, ], rx2[1:2, -1]))
     stopifnot(identical(dim(rx1), dim(x[, -1, drop=FALSE][, -1, drop=FALSE])))
-    stopifnot(identical(dim(rx1, ref=TRUE), dim(x)))
+    stopifnot(identical(dim(derefdata(rx1)), dim(x)))
     stopifnot(identical(dimnames(rx1), dimnames(x[, -1, drop=FALSE][, -1, drop=FALSE])))
-    stopifnot(identical(dimnames(rx1, ref=TRUE), dimnames(x)))
+    stopifnot(identical(dimnames(derefdata(rx1)), dimnames(x)))
 
     # check row+col reduction
     rx3 <- refdata(x)
@@ -593,16 +561,16 @@ regression.test.refdata <- function(){
     stopifnot(identical(rx2[], rx3[-1, -1]))
     rx1 <- rx2[-1, -1, ref=TRUE]
     stopifnot(identical(dim(rx2), dim(x[-1, -1, drop=FALSE])))
-    stopifnot(identical(dim(rx2, ref=TRUE), dim(x)))
+    stopifnot(identical(dim(derefdata(rx2)), dim(x)))
     stopifnot(identical(dimnames(rx2), dimnames(x[-1, -1, drop=FALSE])))
-    stopifnot(identical(dimnames(rx2, ref=TRUE), dimnames(x)))
+    stopifnot(identical(dimnames(derefdata(rx2)), dimnames(x)))
     stopifnot(identical(rx1[], rx2[-1, -1]))
     rx0 <- rx1[-1, -1, ref=TRUE]
     stopifnot(identical(rx0[], rx1[-1, -1]))
     stopifnot(identical(dim(rx1), dim(x[-1, -1, drop=FALSE][-1, -1, drop=FALSE])))
-    stopifnot(identical(dim(rx1, ref=TRUE), dim(x)))
+    stopifnot(identical(dim(derefdata(rx1)), dim(x)))
     stopifnot(identical(dimnames(rx1), dimnames(x[-1, -1, drop=FALSE][-1, -1, drop=FALSE])))
-    stopifnot(identical(dimnames(rx1, ref=TRUE), dimnames(x)))
+    stopifnot(identical(dimnames(derefdata(rx1)), dimnames(x)))
 
     # check dim dropping
     rx3 <- refdata(x)
@@ -648,47 +616,6 @@ regression.test.refdata <- function(){
     stopifnot(identical(rx3[], y))
     stopifnot(identical(rx2[], rx3[-1, -1]))
     stopifnot(identical(rx2b[], rx3[-1, -1]))
-
-    # check dim assignment
-    old.options <- options(show.error.messages=FALSE)
-    stopifnot(inherits(try( dim(rx3) <- dim(rx3) ), "try-error"))
-    options(old.options)
-
-    ##check dimnames assignments
-    # creating copies
-    rx3 <- refdata(x)
-    rx2 <- rx3[-1, -1, ref=TRUE]
-    rx2b <- rx3[-1, -1, ref=TRUE]
-    if (i=="data.frame"){
-      dnam <- list(c("x2","x3"), c("y2","y3"))
-    }else{
-      dnam <- list(x=c("x2","x3"), y=c("y2","y3"))
-    }
-    dimnames(rx2) <- dnam
-    stopifnot(identical(dimnames(rx3), dimnames(x)))
-    stopifnot(identical(dimnames(rx2), dnam))
-    y <- x
-    rownames(y)[-1] <- c("m2","m3")
-    colnames(y)[-1] <- c("n2","n3")
-    rownames(rx3)[-1] <- c("m2","m3")
-    colnames(rx3)[-1] <- c("n2","n3")
-    stopifnot(identical(dimnames(rx3), dimnames(y)))
-    stopifnot(identical(dimnames(rx2), dnam))
-    stopifnot(identical(dimnames(rx2b), dimnames(x[-1, -1])))
-    # changing original
-    rx3 <- refdata(x)
-    rx2 <- rx3[-1, -1, ref=TRUE]
-    rx2b <- rx3[-1, -1, ref=TRUE]
-    y <- x
-    dimnames(y) <- list(m=c("m1", "m2","m3"), n=c("n1", "n2","n3"))
-    dimnames(rx2, ref=TRUE) <- dimnames(y)
-    stopifnot(identical(dimnames(rx3), dimnames(y)))
-    stopifnot(identical(dimnames(rx2), dimnames(y[-1, -1])))
-    stopifnot(identical(dimnames(rx2), dimnames(rx2b)))
-    dimnames(rx2, ref=TRUE) <- dimnames(rx2, ref=TRUE)
-    stopifnot(identical(dimnames(rx3), dimnames(y)))
-    stopifnot(identical(dimnames(rx2), dimnames(y[-1, -1])))
-    stopifnot(identical(dimnames(rx2), dimnames(rx2b)))
 
   }
 
