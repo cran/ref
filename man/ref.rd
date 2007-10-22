@@ -60,7 +60,7 @@ ref(name, loc = parent.frame())
   This shows what a great job the R core developers have done. In the current version the set of functions for references was dramatically simplified, the main differences to 1997 beeing the following:
   \enumerate{
     \item{\bold{no idempotence}}{ \code{\link{deref}} and  \code{\link{deref<-}} now are a simple function and no longer are methods. This decision was made due top performance reasons. As a consequence, \code{deref()} no longer is idempotent: one has to know whether an object is a reference. Function \code{\link{is.ref}} provides a test. }
-    \item{\bold{no write protection}}{ The 1997 suggestion included a write protection attribute of references, allowing for read only references and allowing for references that could only be changed by functions that knwe the access code. Reasons for this: there is no need for readonly references (due to copy on modify) and oop provides better mechanisms for security. }
+    \item{\bold{no write protection}}{ The 1997 suggestion included a write protection attribute of references, allowing for read only references and allowing for references that could only be changed by functions that know the access code. Reasons for this: there is no need for readonly references (due to copy on modify) and oop provides better mechanisms for security. }
     \item{\bold{no static variables}}{ The suggestion made in 1997 did include an implementation of static variables realized as special cases of references with a naming convention which reduced the risc of name collisions in the 1997 practice of assigning to frame 0. Now R has namespaces and the oop approach of Henrik Bengtsson using environments is to be prefered over relatively global static objects. }
   }
 }

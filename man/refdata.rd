@@ -22,8 +22,6 @@
 refdata(x)
 derefdata(x)
 derefdata(x) <- value
-#[.refdata(x, i = NULL, j = NULL, drop = FALSE, ref = FALSE)
-#[<-.refdata(x, i = NULL, j = NULL, ref = FALSE, value)
  \method{[}{refdata}(x, i = NULL, j = NULL, drop = FALSE, ref = FALSE)
  \method{[}{refdata}(x, i = NULL, j = NULL, ref = FALSE) <- value
  \method{dim}{refdata}(x)
@@ -31,12 +29,11 @@ derefdata(x) <- value
  \method{row.names}{refdata}(x)
  \method{names}{refdata}(x)
 
-# -- most important usage for human beings (does not pass R CMD CHECK) -----
+# -- most important usage for human beings  --------------------------------
 # rd <- refdata(x)                   # create reference
-# derefdata(x)                       # retrieve original data
-# derefdata(x) <- value              # modify original data
-# rd <- refdata(x)                   # create reference
-# rd[]                               # get all data
+# derefdata(rd)                      # retrieve original data
+# derefdata(rd) <- value             # modify original data
+# rd[]                               # get all (current) data
 # rd[i, j]                           # get part of data
 # rd[i, j, ref=TRUE]                 # get new reference on part of data
 # rd[i, j]           <- value        # modify part of data (now rd is reference on local copy of the data)
@@ -68,7 +65,7 @@ derefdata(x) <- value
   The refdata code is currently R only (not implemented for S+). \cr
   Please note the following differences to matrices and dataframes: \cr
   \describe{
-     \item{\code{x[]}}{you need to write \code{x[]} in order to get the data}
+     \item{\code{x[]}}{you need to write \code{x[]} instead of \code{x} in order to get all current data}
      \item{\code{drop=FALSE}}{by default drop=FALSE which gives consistent behaviour for matrices and data.frames. You can use the $- or [[-operator to extract single column vectors which are granted to be of a consistent data type. However, currently $ and [[ are only wrappers to [. They might be performance tuned in later versions.}
      \item{\code{x[i]}}{single index subsetting is not defined, use \code{x[][i]} instead, but beware of differences between matrices and dataframes}
      \item{\code{x[cbind()]}}{matrix index subsetting is not defined, use \code{x[][cbind(i, j)]} instead}
