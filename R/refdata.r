@@ -17,7 +17,7 @@
 #! \alias{posi.index}
 #! \title{ creating standardized, memory optimized index for subsetting }
 #! \description{
-#!   Function \code{optimal.index} converts an index specification of type {logical, integer, -integer, character} into one of {integer, -integer} whatever is smaller.
+#!   Function \code{optimal.index} converts an index specification of type \{logical, integer, -integer, character\} into one of \{integer, -integer\} whatever is smaller.
 #!   Function \code{need.index} returns TRUE if the index does represent a subset (and thus indexing is needed).
 #!   Function \code{posi.index} returns positive integers representing the (sub)set.
 #! }
