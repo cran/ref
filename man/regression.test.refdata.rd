@@ -14,7 +14,7 @@ regression.test.refdata()
   TRUE if successful
 }
 \author{ Jens Oehlschlägel }
-\seealso{ \code{\link{refdata}}, \code{\link[base]{example}} }
+\seealso{ \code{\link{refdata}}, \code{\link[utils]{example}} }
 
 \examples{
   regression.test.refdata()

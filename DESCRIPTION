@@ -1,6 +1,6 @@
 Package: ref
-Version: 0.96
-Date: 2007-10-22
+Version: 0.97
+Date: 2009-10-11
 Title: References for R
 Author: Jens Oehlschlägel <jens.oehlschlaegel@truecluster.com>
 Maintainer: Jens Oehlschlägel <jens.oehlschlaegel@truecluster.com>
@@ -12,6 +12,6 @@ Description: small package with functions for creating references,
 License: file LICENSE
 URL: http://CRAN.r-project.org
 Encoding: latin1
-Packaged: 2009-04-13 15:27:02 UTC; Jens Oehlschlaegel
+Packaged: 2009-10-11 09:42:21 UTC; Jens Oehlschlaegel
 Repository: CRAN
-Date/Publication: 2009-04-15 07:34:58
+Date/Publication: 2009-10-11 14:42:05
