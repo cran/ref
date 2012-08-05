@@ -40,13 +40,15 @@ deref(ref) <- value
   deref(rx)[1, ]                # read part of the object
   deref(rx)[1, ] <- 5:1         # replace part of the object
   deref(rx)                     # see the change
-  cat("For examples how to pass by references see the Performance test examples at the help pages\n")
+  cat("For performance test examples see ?deref\n")
 
  \dontrun{
   ## Performance test examples showing actually passing by reference
-  # define test size
-  nmatrix <- 1000   # matrix size of nmatrix by nmatrix
-  nloop   <- 10     # you might want to use less loops in S+, you might want more in R versions before 1.8
+  # define test matrix size of nmatrix by nmatrix
+  nmatrix <- 1000
+  # you might want to use less loops in S+
+  # you might want more in R versions before 1.8
+  nloop   <- 10     
 
   # Performance test using ref
   t1 <- function(){ # outer function
@@ -55,8 +57,9 @@ deref(ref) <- value
       t2(a)
     m[1,1]
   }
-  # subsetting deref is slower (by factor 75 slower since R 1.8 compared to previous versions, and much, much slower in S+) ...
-  t2 <- function(ref){ # inner function
+  # subsetting deref is slower (by factor 75 slower since R 1.8 compared to previous versions
+  # , and much, much slower in S+) ...
+  t2 <- function(ref){
     cat("timing", timing.wrapper(
       for(i in 1:nloop)
         deref(ref)[1,1] <- i

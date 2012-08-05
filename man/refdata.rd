@@ -30,16 +30,16 @@ derefdata(x) <- value
  \method{names}{refdata}(x)
 
 # -- most important usage for human beings  --------------------------------
-# rd <- refdata(x)                   # create reference
-# derefdata(rd)                      # retrieve original data
-# derefdata(rd) <- value             # modify original data
-# rd[]                               # get all (current) data
-# rd[i, j]                           # get part of data
-# rd[i, j, ref=TRUE]                 # get new reference on part of data
-# rd[i, j]           <- value        # modify part of data (now rd is reference on local copy of the data)
-# rd[i, j, ref=TRUE] <- value        # modify part of original data (respecting subsetting history)
-# dim(rd)                            # dim of (subsetted) data
-# dimnames(rd)                       # dimnames of (subsetted) data
+# rd <- refdata(x)             # create reference
+# derefdata(rd)                # retrieve original data
+# derefdata(rd) <- value       # modify original data
+# rd[]                         # get all (current) data
+# rd[i, j]                     # get part of data
+# rd[i, j, ref=TRUE]           # get new reference on part of data
+# rd[i, j]           <- value  # modify / create local copy
+# rd[i, j, ref=TRUE] <- value  # modify original data (respecting subsetting history)
+# dim(rd)                      # dim of (subsetted) data
+# dimnames(rd)                 # dimnames of (subsetted) data
 }
 \arguments{
   \item{x}{ a matrix or data.frame or any other 2-dimensional object that has operators "[" and "[<-" defined }
@@ -83,23 +83,25 @@ derefdata(x) <- value
 \examples{
 
   ## Simple usage Example
-  x <- cbind(1:5, 5:1)            # take a matrix or data frame
-  rx <- refdata(x)                # wrap it into an refdata object
-  rx                              # see the autoprinting
-  rm(x)                           # delete original to save memory
-  rx[]                            # extract all data
-  rx[-1, ]                        # extract part of data
-  rx2 <- rx[-1, , ref=TRUE]       # create refdata object referencing part of data (only index, no data is duplicated)
-  rx2                             # compare autoprinting
-  rx2[]                           # extract 'all' data
-  rx2[-1, ]                       # extract part of (part of) data
+  x <- cbind(1:5, 5:1)       # take a matrix or data frame
+  rx <- refdata(x)           # wrap it into an refdata object
+  rx                         # see the autoprinting
+  rm(x)                      # delete original to save memory
+  rx[]                       # extract all data
+  rx[-1, ]                   # extract part of data
+  rx2 <- rx[-1, , ref=TRUE]  # create refdata object referencing part of data 
+                             # (only index, no data is duplicated)
+  rx2                        # compare autoprinting
+  rx2[]                      # extract 'all' data
+  rx2[-1, ]                  # extract part of (part of) data
   cat("for more examples look the help pages\n")
 
  \dontrun{
   # Memory saving demos
   square.matrix.size <- 1000
   recursion.depth.limit <- 10
-  non.referenced.matrix <- matrix(1:(square.matrix.size*square.matrix.size), nrow=square.matrix.size, ncol=square.matrix.size)
+  non.referenced.matrix <- matrix(1:(square.matrix.size*square.matrix.size)
+  , nrow=square.matrix.size, ncol=square.matrix.size)
   rownames(non.referenced.matrix) <- paste("a", seq(length=square.matrix.size), sep="")
   colnames(non.referenced.matrix) <- paste("b", seq(length=square.matrix.size), sep="")
   referenced.matrix <- refdata(non.referenced.matrix)
@@ -127,7 +129,8 @@ derefdata(x) <- value
   recurse.nonref(non.referenced.matrix, recursion.depth.limit)
   gc()
    memsize.wrapper()
-  rm(recurse.nonref, recurse.ref, non.referenced.matrix, referenced.matrix, square.matrix.size, recursion.depth.limit)
+  rm(recurse.nonref, recurse.ref, non.referenced.matrix
+  , referenced.matrix, square.matrix.size, recursion.depth.limit)
   }
   cat("for even more examples look at regression.test.refdata()\n")
   regression.test.refdata()  # testing correctness of refdata functionality
