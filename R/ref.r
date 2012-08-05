@@ -453,9 +453,9 @@ is.ref <- function(x)
 #! \keyword{ internal }
 
 sleep.wrapper <- if(is.R()){
-  Sys.sleep
+  function(time)Sys.sleep(time)
 }else{
-  sleep
+  function(time)sleep(time)
 }
 
 memsize.wrapper <- if(is.R()){
